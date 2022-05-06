@@ -4,11 +4,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const apiPopularMovies = 'https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=04c35731a5ee918f014970082a0088b1&page=1',
           apiGenres = 'https://api.themoviedb.org/3/genre/movie/list?sort_by=popularity.desc&api_key=04c35731a5ee918f014970082a0088b1&page=1',
           apiSearch = 'https://api.themoviedb.org/3/search/movie/?api_key=04c35731a5ee918f014970082a0088b1&query=',
+          apiTopMovies = 'https://api.themoviedb.org/3/movie/top_rated?api_key=04c35731a5ee918f014970082a0088b1&page=1',
+          apiTopTV = 'https://api.themoviedb.org/3/tv/popular?api_key=04c35731a5ee918f014970082a0088b1&page=1',
+          apiAnim = 'https://api.themoviedb.org/3/discover/movie?api_key=04c35731a5ee918f014970082a0088b1&with_genres=16&sort_by=vote_count.desc&vote_count.gte=10',
+          apiActors = 'https://api.themoviedb.org/3/person/popular?api_key=04c35731a5ee918f014970082a0088b1&page=1',
           imgPath = "https://image.tmdb.org/t/p/w1280",
           form = document.querySelector('form'),
+          linkMovies = document.getElementById('movies'),
+          linkTvShows = document.getElementById('tvshows'),
+          linkAnim = document.getElementById('anim'),
+          linkActors = document.getElementById('actors'),
+          allLinks = document.querySelectorAll('.header__link'),
+          mainTitle = document.getElementById('title'),
           genresParent = document.querySelector('.main__list'),
           inputSearch = document.querySelector('.header__option-input'),
           parentMovies = document.querySelector('.main__movies-wrapper');
+
 
 
     const colors = ['rgb(243, 121, 76)', 'rgb(87, 218, 241)', 'rgb(204, 130, 238)', 'rgb(98, 206, 179)'];
@@ -20,10 +31,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function deleteMovies() {
         const movies = document.querySelectorAll('.main__movie');
+        if (movies.length > 0) {
+            movies.forEach(movie => movie.remove());
+        }
+    }
 
-        movies.forEach(movie => {
-            movie.remove();
-        });
+    function deleteActors() {
+        const actors = document.querySelectorAll('.main__actor');
+
+        if (actors.length > 0) {
+            actors.forEach(movie => movie.remove());
+        }    
     }
 
     function colorGenres() {
@@ -34,8 +52,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         });
     }
+    // удаление активных классов
+    function deleteLinksActiveClass() {
+        const activeLink = document.querySelector('.header__link-active');
+        const activeGenre = document.querySelector('.main__genre-active');
 
+        if(activeGenre) {
+            activeGenre.classList.remove('main__genre-active');
+        }
 
+        if(activeLink) {
+            activeLink.classList.remove('header__link-active');
+        }
+    }
 
     async function getData(url) {
         const response = await fetch(url);
@@ -49,6 +78,77 @@ document.addEventListener('DOMContentLoaded', () => {
         return await data;
     }
 
+    function showMovies(api) {
+        getData(api).then(result => result.results)
+        .then(result => result.forEach(({backdrop_path, original_title, genre_ids, vote_average, overview, poster_path, release_date, first_air_date, name}) => {
+            new PopularMovie(backdrop_path, original_title || name, genre_ids, vote_average, overview, poster_path, release_date || first_air_date, '.main__movies-wrapper').createGenres(genre_ids);
+        })).catch(error => console.log(error));
+    }
+
+    function showActors(api) {
+        getData(api).then(result => result.results)
+        .then(result => result.forEach(({name, profile_path}) => {
+            new PopularActors(name, profile_path, '.main__actors').render();
+        })).catch(error => console.log(error));
+    }
+
+
+    // получение жанра
+    function getGenre(data, num) {
+        const obj = {};
+
+        data.forEach(item => {
+            obj[item.id] = item.name;
+        });
+
+        return obj[num];
+
+    }
+
+
+    // поиск жанров по цифре
+    async function getGenres(num) {
+        const data = getData(apiGenres).then(result => result.genres)
+        .then(result => getGenre(result, num))
+        .then(result => {
+            return result;
+        });
+
+        const result = await data;
+        return result;
+    }
+
+    // поиск жанра по названию
+    async function getNumOfGenre(genre) {
+        const data = getData(apiGenres).then(result => result.genres)
+        .then(result => {
+            for(let key of result) {
+                if(key.name == genre) {
+                    return key.id;
+                }
+            }
+        });
+
+        const result = await data;
+        return result;
+        
+    }
+
+    function showChosenCategory(category, api) {
+        deleteLinksActiveClass();
+
+        const name = category.innerHTML;
+                    
+        mainTitle.innerHTML = name;
+
+        category.classList.add('header__link-active');
+
+        deleteActors();
+        deleteMovies();
+
+        showMovies(api);
+    }
+
     class PopularMovie {
         constructor(img, name, genres, rating, overview, poster, data, parent) {
             this.img = img;
@@ -56,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.rating = rating;
             this.overview = overview;
             this.poster = poster;
-            this.data = data.slice(0,4);
+            // this.data = data.slice(0,4);
             this.parent = document.querySelector(parent);
         }
 
@@ -150,57 +250,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function showMovies(api) {
-        getData(api).then(result => result.results)
-        .then(result => result.forEach(({backdrop_path, original_title, genre_ids, vote_average, overview, poster_path, release_date}) => {
-            new PopularMovie(backdrop_path, original_title, genre_ids, vote_average, overview, poster_path, release_date, '.main__movies-wrapper').createGenres(genre_ids);
-        })).catch(error => console.log(error));
-    }
-    // getData(apiPopularMovies).then(result => result.results)
-    // .then(result => result.forEach(({backdrop_path, original_title, genre_ids, vote_average, overview, poster_path, release_date}) => {
-    //     new PopularMovie(backdrop_path, original_title, genre_ids, vote_average, overview, poster_path, release_date, '.main__movies-wrapper').createGenres(genre_ids);
-    // }));
+    class PopularActors extends PopularMovie {
+        constructor(name, img,  parent) {
+            super();
+            this.img = img;
+            this.name = name;
+            this.parent = document.querySelector(parent);
+        }
+        render() {
+            const div = document.createElement('div');
+            div.classList.add('main__actor');
 
-    function getGenre(data, num) {
-        const obj = {};
+            div.innerHTML = `
+            <div class="main__actor-preview">
+                <img src="${imgPath + this.img}" alt="" class="main__movie-img">
+                <div class="main__actor-title">${this.name}</div>
+            </div>            
+            `;
 
-        data.forEach(item => {
-            obj[item.id] = item.name;
-        });
-
-        return obj[num];
-
-    }
-
-
-    // поиск жанров по цифре
-    async function getGenres(num) {
-        const data = getData(apiGenres).then(result => result.genres)
-        .then(result => getGenre(result, num))
-        .then(result => {
-            return result;
-        });
-
-        const result = await data;
-        return result;
+            this.parent.append(div);
+        }
     }
 
-    // поиск жанра по названию
-    async function getNumOfGenre(genre) {
-        const data = getData(apiGenres).then(result => result.genres)
-        .then(result => {
-            for(let key of result) {
-                if(key.name == genre) {
-                    return key.id;
-                }
-            }
-        });
-
-        
-        const result = await data;
-        return result;
-        
-    }
 
     parentMovies.addEventListener('click', (e) => {
         e.preventDefault();
@@ -265,17 +336,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Обработчик на кнопку поиск
-
-    // search.addEventListener('click', (e) => {
-    //     e.preventDefault();
-
-    //     modal.classList.add('show');
-    //     modalSearch.style.display = 'block';
-    //     document.body.style.overflow = 'hidden';
-
-    // });
-
     form.addEventListener('submit', async (e)  => {
         e.preventDefault();
         const value = inputSearch.value;
@@ -294,9 +354,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (target && target.classList.contains('main__genre')) {
             const genres = document.querySelectorAll('.main__genre');
+            
+            deleteLinksActiveClass();
+
             genres.forEach(async (genre) => {
                 if (target == genre) {
+                    
+                    genre.classList.add('main__genre-active');
+
                     const name = genre.innerHTML;
+
+                    mainTitle.innerHTML = name;
 
                     const num = await getNumOfGenre(name);
 
@@ -309,9 +377,35 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
+
+
     
+    // Обработчик на кнопки в меню
+    linkMovies.addEventListener('click', () => {
+        showChosenCategory(linkMovies, apiTopMovies);
+    });
 
+    linkTvShows.addEventListener('click', () => {
+        showChosenCategory(linkTvShows, apiTopTV);
+    });
 
+    linkAnim.addEventListener('click', () => {
+        showChosenCategory(linkAnim, apiAnim);
+    });
+
+    linkActors.addEventListener('click', () => {
+        deleteMovies();
+        deleteActors();
+        deleteLinksActiveClass();
+
+        const name = linkActors.innerHTML;
+                    
+        mainTitle.innerHTML = name;
+
+        linkActors.classList.add('header__link-active');
+
+        showActors(apiActors);
+    });
 
     // показ популярных фильмов
     showMovies(apiPopularMovies);

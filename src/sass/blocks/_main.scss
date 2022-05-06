@@ -29,6 +29,9 @@
         &:hover {
             box-shadow: 0px 0px 10px #fff;
         }
+        &-active {
+            box-shadow: 0px 0px 10px #fff;
+        }
     }
     &__list {
         width: 400px;
@@ -51,7 +54,6 @@
             margin-top: 20px;
             display: grid;
             grid-template-columns: repeat(auto-fit, 350px);
-            grid-template-rows: 250px;
             grid-auto-rows: 250px;
             row-gap: 30px;
             justify-content: space-between;
@@ -319,6 +321,35 @@
                 fill: #fff;
             }
         }
-
+    }
+    &__actors {
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, 300px);
+        grid-auto-rows: 400px;
+        row-gap: 50px;
+        justify-content: space-between;
+    }
+    &__actor {
+        position: relative;
+        width: 300px;
+        height: 400px;
+        &-preview {
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            transition: 0.3s all;
+            border-radius: 15px;
+            
+        }
+        &-title {
+            width: 100%;
+            color: #fff;
+            font-weight: 700;
+            font-size: 20px;            
+            position: absolute;
+            bottom:0;
+            text-align: center;
+        }
     }
 }
