@@ -1,0 +1,68 @@
+.header {
+    &__wrapper {
+        padding: 40px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        
+    }
+    &__menu {
+        display: flex;
+        width: 400px;
+        justify-content: space-between;
+        margin-right: 450px;
+    }
+    &__link {
+        color: var(--link-color);
+        text-decoration: none;
+    }
+    &__logo {
+        width: 150px;
+    }
+    &__options {
+        display: flex;
+        width: 270px;
+        justify-content: space-between;
+        align-items: center;
+
+    }
+    &__option {
+        svg {
+            fill: #fff;
+            width: 25px;
+            height: 25px;
+        }
+        &-search {
+            position: relative;
+        }
+        &-input {
+            background-color: white;
+            border: none;
+            width: 180px;
+            height: 40px;
+            border-radius: 30px;
+            padding: 10px 40px 10px 15px;
+            &:focus {
+                outline: none;
+            }
+        }
+        &-btn {
+            position: absolute;
+            right: 0;
+            top: 0;
+            margin-right: 4px;
+            border: none;
+            margin-top: 3px;
+            margin-left: 10px;
+            background-color: #fff;
+            border-radius: 30px;
+            cursor: pointer;
+            svg {
+                background-color: #fff;
+                fill: gray;
+                margin-right: 4px;
+                margin-top: 3px;
+            }
+        }
+    }
+}
