@@ -45,6 +45,11 @@
     &__subtitle {
         color: var(--link-color);
         text-decoration: none;
+        cursor: pointer;
+        transition: 0.3s all;
+        &:hover {
+            color: #fff;
+        }
     }
     &__movies {
         padding-left: 50px;
