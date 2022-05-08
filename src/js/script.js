@@ -15,31 +15,34 @@ document.addEventListener('DOMContentLoaded', () => {
           linkTvShows = document.getElementById('tvshows'),
           linkAnim = document.getElementById('anim'),
           linkActors = document.getElementById('actors'),
-          allLinks = document.querySelectorAll('.header__link'),
           mainTitle = document.getElementById('title'),
           genresParent = document.querySelector('.main__list'),
           inputSearch = document.querySelector('.header__option-input'),
           parentMovies = document.querySelector('.main__movies-wrapper');
 
+
+    // для кнопки next
     const page = {
         api: 'https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=04c35731a5ee918f014970082a0088b1&page=',
         num: 1,
         name: 'Popular movies'
     };
+    // цвета кнопок жанров
     const colors = ['rgb(243, 121, 76)', 'rgb(87, 218, 241)', 'rgb(204, 130, 238)', 'rgb(98, 206, 179)'];
     
-
+    // получение цвета
     function getColor() {
         return Math.floor(Math.random() * colors.length);
     }
 
+    // удаление фильмов при смене вкладки
     function deleteMovies() {
         const movies = document.querySelectorAll('.main__movie');
         if (movies.length > 0) {
             movies.forEach(movie => movie.remove());
         }
     }
-
+    // удаление актеров при смене вкладки
     function deleteActors() {
         const actors = document.querySelectorAll('.main__actor');
 
@@ -47,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
             actors.forEach(movie => movie.remove());
         }    
     }
-
+    // покраска жанров
     function colorGenres() {
         const allGenres = document.querySelectorAll('.main__genre');
 
@@ -56,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         });
     }
-    // удаление активных классов
+    // удаление активных классов кнопок жанров и вкладок
     function deleteLinksActiveClass() {
         const activeLink = document.querySelector('.header__link-active');
         const activeGenre = document.querySelector('.main__genre-active');
@@ -69,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
             activeLink.classList.remove('header__link-active');
         }
     }
-
+    // получени данных 
     async function getData(url) {
         const response = await fetch(url);
 
@@ -81,14 +84,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         return await data;
     }
-
+    // показ фильмов
     function showMovies(api) {
         getData(api).then(result => result.results)
         .then(result => result.forEach(({backdrop_path, original_title, genre_ids, vote_average, overview, poster_path, release_date, first_air_date, name}) => {
-            new PopularMovie(backdrop_path, original_title || name, genre_ids, vote_average, overview, poster_path, release_date || first_air_date, '.main__movies-wrapper').createGenres(genre_ids);
+            new Movie(backdrop_path, original_title || name, genre_ids, vote_average, overview, poster_path, release_date || first_air_date, '.main__movies-wrapper').createGenres(genre_ids);
         })).catch(error => console.log(error));
     }
-
+    // показ актеров
     function showActors(api) {
         getData(api).then(result => result.results)
         .then(result => result.forEach(({name, profile_path}) => {
@@ -97,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // получение жанра
+    // получение жанра 
     function getGenre(data, num) {
         const obj = {};
 
@@ -108,7 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return obj[num];
 
     }
-
 
     // поиск жанров по цифре
     async function getGenres(num) {
@@ -135,19 +137,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const result = await data;
         return result;
-        
     }
-
+    // сохранение данных для кнопки next
+    function dataForNextBtn(name, api) {
+        page.name = name;
+        page.num = 1;
+        page.api = api.slice(0, api.length-1);
+    }
+    // показ выбранной вкладки
     function showChosenCategory(category, api) {
         deleteLinksActiveClass();
 
         const name = category.innerHTML;
-                    
+
         mainTitle.innerHTML = name;
-        page.name = name;
-        page.num = 1;
-        page.api = api.slice(0, api.length-1);
-        // console.log(api);
+
+        dataForNextBtn(name, api);
 
         category.classList.add('header__link-active');
 
@@ -157,7 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
         showMovies(api);
     }
 
-    class PopularMovie {
+    // показ фильмов
+    class Movie {
         constructor(img, name, genres, rating, overview, poster, data, parent) {
             this.img = img;
             this.name = name;
@@ -167,10 +173,9 @@ document.addEventListener('DOMContentLoaded', () => {
             this.data = data;
             this.parent = document.querySelector(parent);
         }
-
+        // создание жанров
         async createGenres(genres) {
             let str = '';
-
 
             if (genres.length > 3) {
                 for (let i = 0; i < 3; i++) {
@@ -191,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             }
-
+            // запуск функции помещения на страницу фильмов
             this.render(str);                        
 
         }
@@ -257,8 +262,8 @@ document.addEventListener('DOMContentLoaded', () => {
             this.parent.append(div);
         }
     }
-
-    class PopularActors extends PopularMovie {
+    // актеры
+    class PopularActors extends Movie {
         constructor(name, img,  parent) {
             super();
             this.img = img;
@@ -280,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-
+    // нажатие на фильм
     parentMovies.addEventListener('click', (e) => {
         e.preventDefault();
         const target = e.target;
@@ -333,7 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     });
-
+    // закрытие окна на кнопку escp
     document.addEventListener('keydown', (e) => {
         const showedOverview = document.querySelector('.show');
 
@@ -343,7 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         }
     });
-
+    // кнока поиск фильмов
     form.addEventListener('submit', async (e)  => {
         e.preventDefault();
         const value = inputSearch.value;
@@ -352,7 +357,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         showMovies(apiSearch+value);
         
-
         form.reset();
     });
 
@@ -364,27 +368,25 @@ document.addEventListener('DOMContentLoaded', () => {
             const genres = document.querySelectorAll('.main__genre');
             
             deleteLinksActiveClass();
-
+            // вычисляем на какую кнопку жанров был клик
             genres.forEach(async (genre) => {
                 if (target == genre) {
-                    
+                    // добавляем класс активности
                     genre.classList.add('main__genre-active');
 
                     const name = genre.innerHTML;
 
                     mainTitle.innerHTML = name;
-                    page.name = name;
-                    page.num = 1;
-                    console.log(page);
-
+                    // вычисляем номер жанра для url
                     const num = await getNumOfGenre(name);
 
                     const url = `https://api.themoviedb.org/3/discover/movie?api_key=04c35731a5ee918f014970082a0088b1&with_genres=${num}&sort_by=vote_count.desc&vote_count.gte=10&page=1`;
-
-                    page.api = url;
+                    // сохраняем данные
+                    dataForNextBtn(name, url);
                     
                     deleteMovies();
-
+                    deleteActors();
+                    // выводим результат на страницу
                     showMovies(url);
                 }
             });
@@ -414,9 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const name = linkActors.innerHTML;
                     
         mainTitle.innerHTML = name;
-        page.api = apiActors.substring(0, apiActors.length-1);
-        page.name = name;
-        page.num = 1;
+        dataForNextBtn(name, apiActors);
 
         linkActors.classList.add('header__link-active');
 
@@ -426,15 +426,13 @@ document.addEventListener('DOMContentLoaded', () => {
     //обработчик на кнопку next
 
     nextArrow.addEventListener('click', () => {
+        // если выбрана вкладка актеров
         if(page.name == 'Actors') {
             deleteActors();
-            console.log(page)
 
             page.num++;
             showActors(page.api + page.num);
         } else {
-            // showActors(page.api);
-            console.log(page)
             page.num++;
             deleteMovies();
             showMovies(page.api + page.num);
@@ -444,9 +442,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // показ популярных фильмов
     showMovies(apiPopularMovies);
+    // покраска кнопок
     colorGenres();
-
-
 
 });
 

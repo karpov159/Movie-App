@@ -1,0 +1,160 @@
+@media (max-width: 1300px) {
+    .header {
+        &__menu {
+            margin-right: 300px;
+        }
+    }
+}
+
+@media (max-width: 1200px) {
+    .header {
+        &__menu {
+            margin-right: 100px;
+        }
+        &__logo {
+            margin-right: 15px;
+        }
+    }
+
+    .main {
+        &__overview {
+            &-wrapper {
+                width: 700px;
+            }
+        }
+    }
+}
+
+@media (max-width: 992px) {
+    .container {
+        padding: 0 10px;
+    }
+
+    .header {
+        &__wrapper {
+            padding: 20px 0;
+        }
+        &__menu {
+            margin-right: 15px;
+        }
+        &__link {
+            font-size: 13px;
+            &-active {
+                &:after {
+                    top: 25px;
+                }
+            }
+        }
+        &__options {
+            width: 240px;
+        }
+        &__option {
+            margin-left: 10px;
+            &-input {
+                width: 140px;
+                &:focus {
+                    width: 140px;
+                }
+            }
+        }
+    }
+
+    .main {
+        &__wrapper {
+            grid-template-columns: 250px 1fr;
+        }
+        &__genres {
+            padding-top: 10px;
+            padding-right: 10px;
+        }
+        &__list {
+            width: 100%;
+        }
+        &__title {
+            font-size: 20px;
+        }
+        &__genre {
+            min-width: 35px;
+            height: 25px;
+            font-size: 13px;
+            padding: 5px 10px;
+            margin: 10px 10px 0 0;
+        }
+        &__movies {
+            padding-left: 10px;
+            padding-top: 10px;
+            &-wrapper {
+                justify-content: flex-start;
+            }
+        }
+        &__overview {
+            &-wrapper {
+                width: 650px;
+            }
+            &-title {
+                font-size: 20px;
+            }
+            &-rate , &-date {
+                font-size: 15px;
+            }
+            &-rating {
+                width: 90px;
+            }
+            &-descr {
+                font-size: 17px;
+                margin-top: 15px;
+            }
+            &-btns {
+                margin-top: 30px;
+            }
+            &-img {
+                width: 100%;
+                height: 550px;
+            }
+        }
+    }
+}
+
+
+@media (max-width: 768px) {
+    .header {
+        &__logo {
+            width: 100px;
+        }
+        &__option {
+            svg {
+                width: 20px;
+                height: 20px;
+            }
+            &-input {
+                height: 30px;
+                width: 100px;
+            }
+        }
+    }
+    .main {
+        &__wrapper {
+            grid-template-columns: 170px 1fr;
+        }
+        &__title {
+            font-size: 15px;
+        }
+        &__genre {
+            height: 20px;
+            padding: 0px 7px;
+            font-size: 12px;
+        }
+        &__overview {
+            &-wrapper {
+                width: 500px;
+            }
+            &-img {
+                height: 500px;
+            }
+        }
+    }
+}
+
+@media (max-width: 576px) {
+
+}

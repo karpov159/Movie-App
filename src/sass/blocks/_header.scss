@@ -40,11 +40,12 @@
     &__options {
         display: flex;
         width: 270px;
-        justify-content: space-between;
+        justify-content: flex-end;
         align-items: center;
 
     }
     &__option {
+        margin-left: 25px;
         svg {
             fill: #fff;
             width: 25px;
@@ -54,7 +55,6 @@
             position: relative;
         }
         &-input {
-            // margin-left: 20px;
             background-color: white;
             border: none;
             width: 180px;
