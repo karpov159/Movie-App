@@ -72,11 +72,22 @@ document.addEventListener('DOMContentLoaded', () => {
             activeLink.classList.remove('header__link-active');
         }
     }
+    
+    function showError() {
+        if (document.querySelector('.error') === null) {
+            const errorMessage = document.createElement('div');
+            errorMessage.innerHTML = 'Чтобы приложение заработало - нужно включить VPN';
+            errorMessage.classList.add('error');
+            document.querySelector('.main__movies').append(errorMessage);
+        }
+    }
     // получени данных 
     async function getData(url) {
         const response = await fetch(url);
 
         if(!response.ok) {
+
+
             throw new Error(`Error with ${url}, status: ${response.status}`);
 
         }
@@ -89,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         getData(api).then(result => result.results)
         .then(result => result.forEach(({backdrop_path, original_title, genre_ids, vote_average, overview, poster_path, release_date, first_air_date, name}) => {
             new Movie(backdrop_path, original_title || name, genre_ids, vote_average, overview, poster_path, release_date || first_air_date, '.main__movies-wrapper').createGenres(genre_ids);
-        })).catch(error => console.log(error));
+        })).catch(showError);
     }
     // показ актеров
     function showActors(api) {
